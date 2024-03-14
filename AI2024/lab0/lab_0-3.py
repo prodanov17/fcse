@@ -11,6 +11,36 @@ class GameStrategy(ABC):
     def calculate_next_position(self, player):
         pass
 
+class DFS(GameStrategy):
+    def __init__(self, game) -> None:
+        self.game = game
+        self.visited = set()
+
+    def calculate_next_position(self, player):
+        return self.dfs(player.get_position()) or player.get_position()
+
+    def dfs(self, position):
+        x, y = position
+
+        if (x, y) in self.visited or not self.game.is_dot(position):
+            return None
+
+        self.visited.add((x, y))
+
+        if self.game.is_game_finished():
+            return None
+
+        neighbors = self.game.check_neighbors(position)
+        random.shuffle(neighbors)  # Shuffle to explore in a random order
+
+        for neighbor in neighbors:
+            result = self.dfs(neighbor)
+            if result is not None:
+                return result
+
+        return position
+
+
 class RandomStrategy(GameStrategy):
     def __init__(self, game) -> None:
         self.game = game
@@ -183,11 +213,13 @@ if __name__ == "__main__":
         clear_screen()
         pacman.play_game()
         game.print_game_state()
-        sleep(0.5)
+        sleep(0)
         if pacman.is_game_over():
             break
 
     for i in pacman.moves:
         print(i)
+
+    print(len(pacman.moves))  
         
 
