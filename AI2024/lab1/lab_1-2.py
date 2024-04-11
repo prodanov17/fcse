@@ -213,7 +213,9 @@ if __name__ == "__main__":
 
     problem = SnakeProblem(initial, None, board)
     node = breadth_first_graph_search(problem)
-    
+
+    if node is not None:
+        print(node.solution())
     
 
 
