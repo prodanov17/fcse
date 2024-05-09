@@ -3,5 +3,9 @@ ipks
 ooad
 vvkn
 notes
-OS2024/**
 ANSB2024/**
+**/env
+env
+**/*/env
+.env
+**/.env

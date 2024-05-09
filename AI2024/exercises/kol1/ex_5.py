@@ -1,15 +1,36 @@
 from constraint import *
+import random
 
-def notEqualConstraint(a, b):
-    time = int(a.split("_")[1])
-    return time != int(b.split("_")[1]) or time != int(b.split("_")[1] + 1)
+def preklopuva(*args):
+    seen = set()
+    for arg in args:
+        split_arg = arg.split("_")
+        tupled_arg = (split_arg[0], int(split_arg[1]))
+        if tupled_arg in seen or (tupled_arg[0], tupled_arg[1] - 1) in seen or (tupled_arg[0], tupled_arg[1] + 1) in seen:
+            return False
+        seen.add(tupled_arg)
+    return True
+
+def ml_preklopuva(*args):
+    seen = set()
+    for arg in args:
+        split_arg = arg.split("_")
+        hour = int(split_arg[1])
+        if hour in seen:
+            return False 
+        seen.add(hour)
+
+    return True
+
+
+
 
 if __name__ == '__main__':
     problem = Problem(BacktrackingSolver())
-    casovi_AI = input()
-    casovi_ML = input()
-    casovi_R = input()
-    casovi_BI = input()
+    casovi_AI = int( input() )
+    casovi_ML = int( input() )
+    casovi_R = int( input() )
+    casovi_BI = int( input() )
 
     AI_predavanja_domain = ["Mon_11", "Mon_12", "Wed_11", "Wed_12", "Fri_11", "Fri_12"]
     ML_predavanja_domain = ["Mon_12", "Mon_13", "Mon_15", "Wed_12", "Wed_13", "Wed_15", "Fri_11", "Fri_12", "Fri_15"]
@@ -20,18 +41,32 @@ if __name__ == '__main__':
     ML_vezbi_domain = ["Tue_11", "Tue_13", "Tue_14", "Thu_11", "Thu_13", "Thu_14"]
     BI_vezbi_domain = ["Tue_10", "Tue_11", "Thu_10", "Thu_11"]
 
+    domain = ["ML_vezbi", "AI_vezbi", "BI_vezbi"]
+    ml_domain = ["ML_vezbi"]
+
     # ---Tuka dodadete gi promenlivite--------------------
-    problem.addVariable("casovi_AI", AI_predavanja_domain)
-    problem.addVariable("casovi_ML", ML_predavanja_domain)
-    problem.addVariable("casovi_R", R_predavanja_domain)
-    problem.addVariable("casovi_BI", BI_predavanja_domain)
-    problem.addVariable("vezbi_AI", AI_vezbi_domain)
-    problem.addVariable("vezbi_ML", ML_vezbi_domain)
-    problem.addVariable("vezbi_BI", BI_vezbi_domain)
+    for i in range(1, casovi_AI + 1):
+        problem.addVariable("AI_cas_" + str(i), AI_predavanja_domain)
+        domain.append("AI_cas_" + str(i))
+    for i in range(1, casovi_ML + 1):
+        problem.addVariable("ML_cas_" + str(i), ML_predavanja_domain)
+        domain.append("ML_cas_" + str(i))
+        ml_domain.append("ML_cas_" + str(i))
+    for i in range(1, casovi_BI + 1):
+        problem.addVariable("BI_cas_" + str(i), BI_predavanja_domain)
+        domain.append("BI_cas_" + str(i))
+    for i in range(1, casovi_R + 1):
+        problem.addVariable("R_cas_" + str(i), R_predavanja_domain)
+        domain.append("R_cas_" + str(i))
+
+    problem.addVariable("BI_vezbi", BI_vezbi_domain)
+    problem.addVariable("ML_vezbi", ML_vezbi_domain)
+    problem.addVariable("AI_vezbi", AI_vezbi_domain)
 
     # ---Tuka dodadete gi ogranichuvanjata----------------
-    problem.addConstraint(notEqualConstraint, ["casovi_AI", "casovi_ML", "casovi_R", "casovi_BI", "vezbi_AI", "vezbi_ML", "vezbi_BI"])
-
+    problem.addConstraint(ml_preklopuva, ml_domain)
+    problem.addConstraint(preklopuva, domain)
+    
     # ----------------------------------------------------
     solution = problem.getSolution()
 
