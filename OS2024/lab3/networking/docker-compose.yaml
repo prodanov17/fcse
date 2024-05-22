@@ -1,0 +1,57 @@
+version: '3.8'
+services:
+  udp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile-udpserver
+    ports:
+      - "8111:8111"
+    environment:
+      - SERVER_PORT=8111
+    networks:
+      - udp-server-private-network
+  udp-client:
+    build:
+      context: .
+      dockerfile: Dockerfile-udpclient
+    environment:
+      - SERVER_NAME=udp-server
+      - SERVER_PORT=8111
+    deploy:
+      replicas: 5
+    depends_on:
+      - udp-server
+    networks:
+      - udp-server-private-network
+  tcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile-tcpserver
+    ports:
+      - "8112:8111"
+    environment:
+      - SERVER_PORT=8111
+    networks:
+      - tcp-server-private-network
+  tcp-client:
+    build:
+      context: .
+      dockerfile: Dockerfile-tcpclient
+    depends_on:
+      - tcp-server
+    environment:
+      - SERVER_NAME=tcp-server
+      - SERVER_PORT=8111
+    deploy:
+      replicas: 5
+    networks:
+      - tcp-server-private-network
+
+
+networks:
+  udp-server-private-network:
+    driver: bridge
+  tcp-server-private-network:
+    driver: bridge
+
+
