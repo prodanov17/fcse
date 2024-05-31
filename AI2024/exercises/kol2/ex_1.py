@@ -16,7 +16,12 @@ if __name__ == '__main__':
     encoder = OrdinalEncoder()
     encoded_dataset = encoder.fit_transform(dataset_X)
 
-    train_X, test_X, train_Y, test_Y = train_test_split(encoded_dataset, dataset_Y, test_size=0.25, shuffle=False)
+    train_X, test_X, train_Y, test_Y = train_test_split(
+        encoded_dataset,
+        dataset_Y,
+        test_size=0.25,
+        shuffle=False
+    )
 
     model = CategoricalNB()
 

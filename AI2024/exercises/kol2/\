@@ -1,12 +1,11 @@
-import os
-os.environ['OPENBLAS_NUM_THREADS'] = '1'
-
 from sklearn.naive_bayes import GaussianNB
 import numpy as np
 from sklearn.metrics import accuracy_score
 from sklearn.neural_network import MLPClassifier
 from sklearn.exceptions import ConvergenceWarning
 import warnings
+import os
+os.environ['OPENBLAS_NUM_THREADS'] = '1'
 
 
 dataset = [
@@ -440,30 +439,23 @@ if __name__ == '__main__':
     model_ = input()
     col = int(input())
 
-    class_zero = [row for row in dataset if row[-1] == 0]
-    class_one = [row for row in dataset if row[-1] == 1]
-
-    dataset_split_zero = len(class_zero)//4
-    dataset_split_one = len(class_one)//4
+    dataset_split = len(dataset)//4
 
     datasets_x = []
     datasets_y = []
 
     for i in range(4):
         datasets_x.append(
-                [row[:-1] for row in class_zero[int((0.25*(i))*len(class_zero)):int((0.25*(i+1))*len(class_zero))]] + 
-            [row[:-1] for row in class_one[int((0.25*(i))*len(class_one)):int((0.25*(i+1))*len(class_one))]]
-        )
+            [row[:-1] for row in dataset[dataset_split * i: dataset_split * (i + 1)]])
         datasets_y.append(
-            [row[-1] for row in class_zero[int((0.25*(i))*len(class_zero)):int((0.25*(i+1))*len(class_zero))]] + 
-            [row[-1] for row in class_one[int((0.25*(i))*len(class_one)):int((0.25*(i+1))*len(class_one))]]
-        )
+            [row[-1] for row in dataset[dataset_split * i: dataset_split * (i + 1)]])
 
     accuracies = []
 
     # 4 steps of training
-    model = resolve_model(model_)
+    print(datasets_x[0])
     for i in range(4):
+        model = resolve_model(model_)
         test_x, test_y = datasets_x[i], datasets_y[i]
         train_x = [row for sublist in datasets_x[:i] +
                    datasets_x[i + 1:] for row in sublist]
@@ -476,7 +468,22 @@ if __name__ == '__main__':
         accuracy = accuracy_score(test_y, predictions)
         accuracies.append(accuracy)
 
+    print(accuracies)
     best_model_index = accuracies.index(max(accuracies))
+    train_x = [row for sublist in datasets_x[:best_model_index] +
+               datasets_x[best_model_index + 1:] for row in sublist]
+    train_y = [row for sublist in datasets_y[:best_model_index] +
+               datasets_y[best_model_index + 1:] for row in sublist]
+    test_x, test_y = datasets_x[best_model_index], datasets_y[best_model_index]
+    train_x_ = [[el[i]
+                 for i in range(len(train_x[0])) if i != col] for el in train_x]
+    test_x_ = [[el[i]
+                for i in range(len(test_x[0])) if i != col] for el in test_x]
+
+    model = resolve_model(model_)
+    model.fit(train_x_, train_y)
+    predictions = model.predict(test_x_)
+    accuracy = accuracy_score(test_y, predictions)
 
     print(f"Prosechna tochnost: {np.mean(accuracies)}")
-    print(f"Tochnost so otstraneta kolona: {accuracies[best_model_index]}")
+    print(f"Tochnost so otstraneta kolona: {accuracy}")
