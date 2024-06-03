@@ -31,6 +31,7 @@ services:
       - "8112:8111"
     environment:
       - SERVER_PORT=8111
+      - COUNTER_FILE=/data/counter.txt
     networks:
       - tcp-server-private-network
   tcp-client:

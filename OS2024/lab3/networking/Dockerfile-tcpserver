@@ -1,6 +1,7 @@
 FROM openjdk:11
 COPY . /usr/src/myapp
 WORKDIR /usr/src/myapp
-RUN javac -d . ./src/tcp/*.java
-CMD ["java", "tcp.Server"]
+RUN mkdir -p /data
+RUN javac -d . ./src/tcp2/*.java
+CMD ["java", "tcp2.Server"]
 
