@@ -8,6 +8,26 @@
             width: 800px;
             margin: auto;
         }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        li {
+            padding: 1rem;
+            background-color: beige;
+            border-radius: 0.5rem;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .mt-4{
+            margin-top: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -19,13 +39,33 @@
         <h2>Search events</h2>
         <input type="text" name="search"/>
     </form>
+    <div class="mt-4">
+
+        <a href="/events/create">Create new event</a>
+    </div>
+    <h2>Events</h2>
+    <ul>
+        <li th:each="event : ${events}">
+            <p>
+                Name: [[${event.name}]], Description: [[${event.description}]], Rating: [[${event.popularityScore}]]
+            </p>
+            <br>
+            <p>[[${event.location.toString()}]]}</p>
+            <a th:href="@{/events/edit/{id}(id=${event.id})}">Edit</a>
+            <form method="post" th:action="@{/events/delete/{id}(id=${event.id})}">
+                <button type="submit">Delete</button>
+            </form>
+        </li>
+    </ul>
+
     <h2>Choose an event:</h2>
-    <form method="post" enctype="application/x-www-form-urlencoded" action="/events">
+    <form method="post" enctype="application/x-www-form-urlencoded" action="/eventBooking">
         <ul>
             <li th:each="event : ${events}">
-                <input type="radio" th:id="${event.name}" name="event" th:value="${event.name}" />
+                <input type="radio" th:id="${event.name}" name="event" th:value="${event.name}"/>
                 <label th:for="${event.name}">
-                    Name: [[${event.name}]], Description: [[${event.description}]], Rating: [[${event.popularityScore}]]
+                    Name: [[${event.name}]], Description: [[${event.description}]], Rating:
+                    [[${event.popularityScore}]], [[${event.location.toString()}]]}
                 </label>
             </li>
         </ul>
@@ -33,7 +73,7 @@
                 the value should be the event name
                 and the displayed text should be Name: <event_name>, Description: <event_description>, Rating: <popularity_score> -->
         <h2>Your name:</h2>
-        <input type="text" name="name" ><br/>
+        <input type="text" name="name"><br/>
         <br/>
 
         <h2>Choose number of tickets:</h2>

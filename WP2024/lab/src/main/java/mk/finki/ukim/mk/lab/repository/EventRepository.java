@@ -3,25 +3,16 @@ package mk.finki.ukim.mk.lab.repository;
 import mk.finki.ukim.mk.lab.model.Event;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import static mk.finki.ukim.mk.lab.data.DataHolder.events;
 
 @Repository
 public class EventRepository {
-    private List<Event> events;
-
-    public EventRepository(){
-        this.events = new ArrayList<Event>();
-
-        this.events.add(new Event("Marathon", "Marathon Desc", 13.0));
-        this.events.add(new Event("Dadada", "Dadada Desc", 16.0));
-        this.events.add(new Event("Fafafa", "fafafa Desc", 23.0));
-        this.events.add(new Event("Gagagag", "gagagag Desc", 30.0));
-        this.events.add(new Event("Cacacaca", "cacacaca Desc", 10.0));
-    }
-
     public List<Event> findAll(){
-        return this.events;
+        return events;
     }
 
     public List<Event> searchEvents(String text) {
@@ -40,6 +31,22 @@ public class EventRepository {
                     .filter(event -> event.getName().toLowerCase().contains(text.toLowerCase()))
                     .toList();
         }
+    }
+
+    public Optional<Event> findById(Long id){
+        return events.stream().filter(e-> Objects.equals(e.getId(), id)).findFirst();
+    }
+
+    public void update(Event event) {
+        events.removeIf(e->e.getId().equals(event.getId()));
+        this.save(event);
+    }
+
+    public void save(Event event){
+        events.add(event);
+    }
+    public void remove(Long id){
+        events.removeIf(e->e.getId().equals(id));
     }
 
 }

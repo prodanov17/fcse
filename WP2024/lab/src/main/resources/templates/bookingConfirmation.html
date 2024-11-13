@@ -18,6 +18,7 @@
   </style>
 </head>
 <body>
+<a href="/events">Back</a>
 <section>
   <header>
     <h1>Event Booking page - Booking confirmation </h1>
@@ -43,6 +44,32 @@
     <tr>
       <td><b>Number of tickets</b></td>
       <td th:text="${numTickets}"></td>
+    </tr>
+  </table>
+</section>
+<section>
+  <h2>All bookings</h2>
+  <table th:each="booking : ${bookings}">
+    <tr>
+      <th colspan="2">
+        Your Booking Status
+      </th>
+    </tr>
+    <tr>
+      <td><b>Attendee Name </b></td>
+      <td th:text="${booking.getAttendeeName()}"></td>
+    </tr>
+    <tr>
+      <td><b>Client IP Address</b></td>
+      <td th:text="${booking.getAtendeeAddress()}"></td>
+    </tr>
+    <tr>
+      <td><b>Booking for Event</b></td>
+      <td th:text="${booking.getEventName()}"></td>
+    </tr>
+    <tr>
+      <td><b>Number of tickets</b></td>
+      <td th:text="${booking.getNumberOfTickets()}"></td>
     </tr>
   </table>
 </section>

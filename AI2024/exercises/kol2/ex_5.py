@@ -5,7 +5,6 @@ import warnings
 from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-import math
 
 warnings.filterwarnings("ignore")
 
@@ -448,7 +447,13 @@ if __name__ == '__main__':
     train_y = train_y + train_y_
     test_y = test_y + test_y_
 
-    model = MLPClassifier(hidden_layer_sizes=6, activation='tanh', max_iter=epoch_num, learning_rate_init=learning_rate, random_state=0)
+    model = MLPClassifier(
+        hidden_layer_sizes=6,
+        activation='tanh',
+        max_iter=epoch_num,
+        learning_rate_init=learning_rate,
+        random_state=0
+    )
 
     model.fit(train_x, train_y)
 
@@ -459,8 +464,8 @@ if __name__ == '__main__':
     accuracy_train = accuracy_score(train_y, predictions_train)
 
     if not check_overfitting(accuracy_train, accuracy_test):
-        print(f"Ne se sluchuva overfitting")
+        print("Ne se sluchuva overfitting")
     else:
-        print(f"Se sluchuva overfitting")
+        print("Se sluchuva overfitting")
     print(f"Tochnost so trenirachko mnozhestvo: {accuracy_train}")
     print(f"Tochnost so validacisko mnozhestvo: {accuracy_test}")
