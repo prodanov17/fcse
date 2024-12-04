@@ -1,9 +1,12 @@
 package mk.finki.ukim.mk.lab.service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import mk.finki.ukim.mk.lab.model.Event;
 import mk.finki.ukim.mk.lab.model.Location;
-import mk.finki.ukim.mk.lab.repository.EventRepository;
-import mk.finki.ukim.mk.lab.repository.LocationRepository;
+import mk.finki.ukim.mk.lab.repository.inMemoryRepo.InMemoryEventRepository;
+import mk.finki.ukim.mk.lab.repository.inMemoryRepo.InMemoryLocationRepository;
+import mk.finki.ukim.mk.lab.repository.prodRepo.EventRepository;
+import mk.finki.ukim.mk.lab.repository.prodRepo.LocationRepository;
 import mk.finki.ukim.mk.lab.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,14 +16,10 @@ import java.util.Optional;
 
 @Service
 public class EventServiceImpl implements EventService {
-    private final EventRepository repository;
-    private final LocationRepository locationRepository;
-
     @Autowired
-    public EventServiceImpl(EventRepository repository, LocationRepository locationRepository) {
-        this.repository = repository;
-        this.locationRepository = locationRepository;
-    }
+    private EventRepository repository;
+    @Autowired
+    private LocationRepository locationRepository;
 
     @Override
     public List<Event> listAll() {
@@ -29,23 +28,36 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<Event> searchEvents(String text) {
-        return repository.searchEvents(text);
+        return repository.findAllByNameLike(text);
     }
 
     @Override
     public void remove(Long id) {
-        this.repository.remove(id);
+        this.repository.deleteById(id);
+    }
+
+    @Override
+    public List<Event> findAllByLocationId(Long id) {
+        return this.repository.findAllByLocationId(id);
     }
 
     @Override
     public void update(Long id, String name, String description, Double popularityScore, Long locationId) throws Exception {
-        Optional<Location> location = this.locationRepository.findById(locationId);
-        if(location.isEmpty()){
-            throw new Exception("Location not found");
-        }
-        Event event = new Event(id, name, description, popularityScore, location.get());
+        Location location = locationRepository.findById(locationId)
+                .orElseThrow(() -> new EntityNotFoundException("Location not found"));
 
-        this.repository.update(event);
+        // Fetch the existing event by ID
+        Event event = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Event not found"));
+
+        // Update the event's fields
+        event.setName(name);
+        event.setDescription(description);
+        event.setPopularityScore(popularityScore);
+        event.setLocation(location);
+
+        // Save the updated event
+        repository.save(event);
     }
 
     @Override
@@ -59,7 +71,11 @@ public class EventServiceImpl implements EventService {
         if(location.isEmpty()){
             throw new Exception("Location not found");
         }
-        Event event = new Event(name, description, popularityScore, location.get());
+        Event event = new Event();
+        event.setName(name);
+        event.setDescription(description);
+        event.setPopularityScore(popularityScore);
+        event.setLocation(location.get());
 
         this.repository.save(event);
     }

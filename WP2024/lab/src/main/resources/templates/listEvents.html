@@ -38,6 +38,16 @@
     <form method="get">
         <h2>Search events</h2>
         <input type="text" name="search"/>
+        <button type="submit">Submit</button>
+
+    </form>
+    <form method="get">
+        <h2>Search by location</h2>
+        <select name="location_id" id="location" >
+            <option value="0">All</option>
+            <option th:each="location : ${locations}" th:value="${location.getId()}" th:text="${location.getName()}"></option>
+        </select>
+        <button type="submit">Submit</button>
     </form>
     <div class="mt-4">
 

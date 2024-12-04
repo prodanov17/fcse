@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create event</title>
+    <style>
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            max-width: 400px;
+            justify-content: center;
+            margin-inline: auto;
+        }
+    </style>
+</head>
+<body>
+<form method="post" th:action="@{/events/edit/{id}(id=${event.getId()})}">
+    <h2>Create event</h2>
+    <label for="name">Name</label>
+    <input type="text" name="name" id="name" th:value="${event.getName()}"/>
+    <label for="description">Description</label>
+    <input type="text" name="description" id="description" th:value="${event.getDescription()}"/>
+    <label for="popularityScore">Popularity score</label>
+    <input type="number" name="popularityScore" id="popularityScore" th:value="${event.getPopularityScore()}"/>
+    <label for="location">Location</label>
+    <select name="location" id="location">
+        <option th:each="location : ${locations}" th:value="${location.getId()}" th:text="${location.getName()} "
+                th:selected="${location.getId()} == ${event.getLocation().getId()}">>
+        </option>
+    </select>
+    <button type="submit">Create</button>
+</form>
+</body>
+</html>
