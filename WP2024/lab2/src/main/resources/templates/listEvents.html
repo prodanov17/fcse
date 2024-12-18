@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Event Booking page - Welcome and choose an Event</title>
+    <style type="text/css">
+        body {
+            width: 800px;
+            margin: auto;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        li {
+            padding: 1rem;
+            background-color: beige;
+            border-radius: 0.5rem;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .mt-4{
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Welcome to our Event Booking App</h1>
+</header>
+<main>
+    <a href="/logout">Log out</a>
+    <form method="get">
+        <h2>Search events</h2>
+        <input type="text" name="search"/>
+        <button type="submit">Submit</button>
+
+    </form>
+    <form method="get">
+        <h2>Search by location</h2>
+        <select name="location_id" id="location" >
+            <option value="0">All</option>
+            <option th:each="location : ${locations}" th:value="${location.getId()}" th:text="${location.getName()}"></option>
+        </select>
+        <button type="submit">Submit</button>
+    </form>
+
+    <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+        <div class="mt-4">
+            <a href="/events/create">Create new event</a>
+        </div>
+    </th:block>
+    <h2>Events</h2>
+    <ul>
+        <li th:each="event : ${events}">
+            <p>
+                Name: [[${event.name}]], Description: [[${event.description}]], Rating: [[${event.popularityScore}]]
+            </p>
+            <br>
+            <p>[[${event.location.toString()}]]}</p>
+            <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+                <a th:href="@{/events/edit/{id}(id=${event.id})}">Edit</a>
+            </th:block>
+            <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+                <form method="post" th:action="@{/events/delete/{id}(id=${event.id})}">
+                    <button type="submit">Delete</button>
+                </form>
+            </th:block>
+        </li>
+    </ul>
+
+    <h2>Choose an event:</h2>
+    <form method="post" enctype="application/x-www-form-urlencoded" action="/eventBooking">
+        <ul>
+            <li th:each="event : ${events}">
+                <input type="radio" th:id="${event.getId()}" name="event" th:value="${event.getId()}"/>
+                <label th:for="${event.getId()}">
+                    Name: [[${event.name}]], Description: [[${event.description}]], Rating:
+                    [[${event.popularityScore}]], [[${event.location.toString()}]]
+                </label>
+            </li>
+        </ul>
+        <!-- Display radio buttons for each event,
+                the value should be the event name
+                and the displayed text should be Name: <event_name>, Description: <event_description>, Rating: <popularity_score> -->
+        <h2>Choose number of tickets:</h2>
+        <input type="number" name="numTickets" min="1" max="10"><br/>
+        <br/>
+        <input type="submit" value="Submit">
+    </form>
+</main>
+</body>
+</html>
